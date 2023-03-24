@@ -15,6 +15,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from "../../Components/Layout/Copyright";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
+import {Alert} from "@mui/material";
 
 const data = [
     {
@@ -33,19 +35,28 @@ const theme = createTheme();
 
 export default function SignIn() {
 
-    const [users, setUsers] = useState(data)
+    const [errMessage, setErrMessage] = useState("");
     const navigate = useNavigate()
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
+        let account = {
+            username: data.get('email'),
             password: data.get('password'),
-        });
-        // Kiem tra tai khoan ton hay khong
-        localStorage.setItem('idUser', 1)
-        navigate('/admin/dashboard')
+        }
 
+        axios.post('http://localhost:8081/api/login', account).then(res => {
+           if (res.data.status == 'error') {
+               setErrMessage(res.data.message);
+           } else {
+               localStorage.setItem('token', res.data.accessToken)
+               navigate('/admin/dashboard')
+           }
+        }).catch(err => {
+            console.log(err)
+            console.log(err.data.message)
+
+        })
     };
 
     return (
@@ -66,7 +77,13 @@ export default function SignIn() {
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
+
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                        { errMessage && (
+                            <>
+                                <Alert severity="error">{errMessage}</Alert>
+                            </>
+                        )}
                         <TextField
                             margin="normal"
                             required
