@@ -45,10 +45,7 @@ export const mainListItems = (
                 </ListItemIcon>
                 <ListItemText primary="Customers" />
             </ListItemButton>
-
         </NavLink>
-
-
 
         <ListItemButton>
             <ListItemIcon>
@@ -76,6 +73,5 @@ export const secondaryListItems = (
             </ListItemIcon>
             <ListItemText primary="Logout" />
         </ListItemButton>
-
     </React.Fragment>
 );

@@ -15,8 +15,11 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from "../../Components/Layout/Copyright";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import axios from "axios";
+import axios from "../../service/axios";
 import {Alert} from "@mui/material";
+import {useDispatch, useSelector} from "react-redux";
+import {setUserLogin} from "../../redux/features/auth/authSlice";
+import authService from "../../service/auth.service";
 
 const data = [
     {
@@ -37,6 +40,8 @@ export default function SignIn() {
 
     const [errMessage, setErrMessage] = useState("");
     const navigate = useNavigate()
+    const dispatch = useDispatch();
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -45,17 +50,19 @@ export default function SignIn() {
             password: data.get('password'),
         }
 
-        axios.post('http://localhost:8081/api/login', account).then(res => {
+        axios.post('/login', account).then(res => {
            if (res.data.status == 'error') {
                setErrMessage(res.data.message);
            } else {
+               console.log(res.data)
                localStorage.setItem('token', res.data.accessToken)
-               navigate('/admin/dashboard')
+               axios.get('/user-login' ).then(response => {
+                   dispatch(setUserLogin(response.data))
+                   navigate('/admin/dashboard')
+               })
+
            }
         }).catch(err => {
-            console.log(err)
-            console.log(err.data.message)
-
         })
     };
 

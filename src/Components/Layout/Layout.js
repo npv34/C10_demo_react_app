@@ -15,10 +15,14 @@ import Container from '@mui/material/Container';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems, secondaryListItems } from './listItem';
-import {useState} from "react";
+import { mainListItems } from './listItem';
+import {useEffect, useState} from "react";
 import Copyright from "./Copyright";
 import {Link, Outlet} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import SecondaryListItems from "./SecondaryListItems";
+import {Menu, MenuItem} from "@mui/material";
+import {AccountCircle} from "@mui/icons-material";
 
 
 
@@ -73,9 +77,23 @@ const mdTheme = createTheme();
 
 function LayoutContent() {
     const [open, setOpen] = useState(true);
+    const auth = useSelector(state => state.auth)
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const handleMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
     const toggleDrawer = () => {
         setOpen(!open);
     };
+
+    useEffect(() => {
+        console.log(auth)
+    }, []);
+
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -107,15 +125,44 @@ function LayoutContent() {
                                 noWrap
                                 sx={{ flexGrow: 1 }}
                             >
-                                Dashboard
+                                Xin chao: {auth.userLogin && auth.userLogin.username}
                             </Typography>
-
 
                         <IconButton color="inherit">
                             <Badge badgeContent={4} color="secondary">
                                 <NotificationsIcon />
                             </Badge>
                         </IconButton>
+                        <div>
+                            <IconButton
+                                size="large"
+                                aria-label="account of current user"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                onClick={handleMenu}
+                                color="inherit"
+                            >
+                                <AccountCircle />
+                            </IconButton>
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorEl}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(anchorEl)}
+                                onClose={handleClose}
+                            >
+                                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                                <MenuItem onClick={handleClose}>My account</MenuItem>
+                            </Menu>
+                        </div>
                     </Toolbar>
                 </AppBar>
                 <Drawer variant="permanent" open={open}>
@@ -135,7 +182,7 @@ function LayoutContent() {
                     <List component="nav">
                         {mainListItems}
                         <Divider sx={{ my: 1 }} />
-                        {secondaryListItems}
+                        <SecondaryListItems />
                     </List>
                 </Drawer>
                 <Box
