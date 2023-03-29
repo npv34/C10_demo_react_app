@@ -9,23 +9,32 @@ import React, {useEffect, useState} from "react";
 import axios from "./service/axios";
 import {setUserLogin} from "./redux/features/auth/authSlice";
 import {useDispatch, useSelector} from "react-redux";
+import Home from "./Pages/Shop/Home";
 
 function App() {
-    const [isLogin, setIsLogin] = useState(true);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth)
 
     useEffect(() => {
-        axios.get('/user-login').then(response => {
-            dispatch(setUserLogin(response.data))
-        })
+        let token = localStorage.getItem('token');
+        if (token) {
+            axios.get('/user-login').then(response => {
+                console.log(response.data)
+                if (response.data.status == 'success') {
+                    dispatch(setUserLogin(response.data))
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+        }
     }, [navigate]);
 
   return (
     <>
       <Routes>
           <Route path="/login" element={<SignIn/>}/>
+          <Route path="/" element={<Home/>}/>
               <Route path="/admin"  element={ auth.isLogined ? <Layout/> : <Navigate to="/login" />}>
                   <Route path="" element={<Navigate to="/admin/dashboard" />}/>
                   <Route path="dashboard" element={<Dashboard/>}/>

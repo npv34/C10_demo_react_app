@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from "../../Components/Layout/Copyright";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "../../service/axios";
 import {Alert} from "@mui/material";
@@ -41,6 +41,8 @@ export default function SignIn() {
     const [errMessage, setErrMessage] = useState("");
     const navigate = useNavigate()
     const dispatch = useDispatch();
+    const auth = useSelector(state => state.auth)
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -54,7 +56,6 @@ export default function SignIn() {
            if (res.data.status == 'error') {
                setErrMessage(res.data.message);
            } else {
-               console.log(res.data)
                localStorage.setItem('token', res.data.accessToken)
                axios.get('/user-login' ).then(response => {
                    dispatch(setUserLogin(response.data))
@@ -65,6 +66,12 @@ export default function SignIn() {
         }).catch(err => {
         })
     };
+
+    useEffect(() => {
+        if (auth.isLogined) {
+            navigate('/admin/dashboard')
+        }
+    }, [auth])
 
     return (
         <ThemeProvider theme={theme}>
