@@ -1,7 +1,8 @@
 import axios from "axios";
 
+console.log(process.env.API_URL)
 const instance = axios.create({
-    baseURL: process.env.API_URL
+    baseURL: "https://demo-mppi.onrender.com/api"
 });
 instance.interceptors.request.use(function (config) {
     const token = localStorage.getItem('token');

@@ -51,7 +51,7 @@ export default function SignIn() {
             username: data.get('email'),
             password: data.get('password'),
         }
-
+        console.log(axios.defaults)
         axios.post('/login', account).then(res => {
            if (res.data.status == 'error') {
                setErrMessage(res.data.message);
